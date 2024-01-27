@@ -5,50 +5,48 @@
 <div class="card shadow mb-4">
     <!-- Card Header - Dropdown -->
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-      <h6 class="m-0 font-weight-bold text-primary">Listado de Productos</h6>
+      <h6 class="m-0 font-weight-bold text-primary">Listado de Proveedores</h6>
       <div class="dropdown no-arrow">
         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
         </a>
         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
           <div class="dropdown-header">Acciones:</div>
-          <a class="dropdown-item" onclick="return abrir_modal('{% url 'inv:producto_new' %}')" href="#"><i class="far fa-calendar-plus"></i>Nueva</a>
+          <a class="dropdown-item" onclick="return abrir_modal('{% url 'cmp:proveedor_new' %}')" href="#"><i class="far fa-calendar-plus"></i>Nueva</a>
         </div>
       </div>
     </div>
     <!-- Card Body -->
     <div class="card-body">
         {% if not obj %}
-          <div class="alert alert-info">No hay Productos</div>
+          <div class="alert alert-info">No hay Proveedores</div>
         {% else %}
         <table class="table table-striped table-hover dt-responsive nowrap" style="width:100%">
             <thead>
-                <th>Sub.Cat</th>
-                <th>Código</th>
-                <th>Barra</th>
-                <th>Descripción</th>
-                <th>Existencia</th>
-                <th>Marca</th>
-                <th>U.M</th> 
+                <th>Id</th>
+                <th>Descripcion</th>
+                <th>Direccion</th>
+                <th>Contacto N° Fijo</th>
+                <th>Teléfono</th>
+                <th>Email</th>
                 <th>Estado</th>
                 <th class="all">Acciones</th>
             </thead>
             <tbody>
                 {% for item in obj %}
                     <tr>
-                        <td>{{item.subcategoria}}</td>
-                        <td>{{item.codigo}}</td>
-                        <td>{{item.codigo_barra}}</td>
+                        <td>{{item.id}}</td>
                         <td>{{item.descripcion}}</td>
-                        <td>{{item.existencia}}</td>
-                        <td>{{item.marca}}</td>
-                        <td>{{item.unidad_medida}}</td>
+                        <td>{{item.direccion}}</td>
+                        <td>{{item.contacto}}</td>
+                        <td>{{item.telefono}}</td>
+                        <td>{{item.email}}</td>
                         <td>{{item.estado|yesno:"Activo,Inactivo"}}</td>
                         
                         <td>
-                          <button class="btn btn-warning btn-circle" onclick="return abrir_modal('{% url 'inv:producto_edit' item.id %}')" >
+                          <button class="btn btn-warning btn-circle" onclick="return abrir_modal('{% url 'cmp:proveedor_edit' item.id %}')" >
                           <i class="far fa-edit"></i></button>
-                          <a href="{% url 'inv:producto_inactivar' item.id %}" class="btn btn-danger btn-circle" role="button"><i class="far fa-thumbs-down"></i></a>                          
+                          <a href="#" class="btn btn-danger btn-circle" role="button"><i class="far fa-thumbs-down"></i></a>                          
                         </td>
                     </tr>
                 {% endfor %}

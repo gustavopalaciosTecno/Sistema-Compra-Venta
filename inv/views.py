@@ -222,7 +222,7 @@ class ProductoEdit(LoginRequiredMixin,
     login_url = 'bases:login'
 
     def form_valid(self, form):
-        form.instance.um = self.request.user
+        form.instance.um = self.request.user.id
         return super().form_valid(form)  
     
 def producto_inactivar(request, id):
