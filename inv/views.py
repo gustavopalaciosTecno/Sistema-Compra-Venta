@@ -241,7 +241,9 @@ def producto_inactivar(request, id):
         prod.save()
         return redirect("inv:producto_list")      
         
-    return render(request,template_name, contexto)        
+    return render(request,template_name, contexto)       
+
+
  
     
          
