@@ -19,19 +19,20 @@ class CategoriaView(SinPrivilegios, \
     context_object_name = "obj"
     
     
-class CategoriaNew(SuccessMessageMixin, SinPrivilegios,\
+
+class CategoriaNew(SuccessMessageMixin,SinPrivilegios,\
     generic.CreateView):
-    model = Categoria
-    template_name = 'inv/categoria_form.html'
-    context_object_name = 'obj'
-    form_class = CategoriaForm
-    success_url = reverse_lazy("inv:categoria_list")
-   
-    success_message = "Categoría creada satisfactoriamente" 
-    
+    permission_required="inv.add_categoria"
+    model=Categoria
+    template_name="inv/categoria_form.html"
+    context_object_name = "obj"
+    form_class=CategoriaForm
+    success_url=reverse_lazy("inv:categoria_list")
+    success_message="Categoria Creada Satisfactoriamente"
+
     def form_valid(self, form):
         form.instance.uc = self.request.user
-        return super().form_valid(form)       
+        return super().form_valid(form)    
     
 class CategoriaEdit(SuccessMessageMixin, LoginRequiredMixin,\
     generic.UpdateView):
@@ -74,6 +75,7 @@ class SubCategoriaNew(LoginRequiredMixin, generic.CreateView):
     def form_valid(self, form):
         form.instance.uc = self.request.user
         return super().form_valid(form)   
+
     
     
 class SubCategoriaEdit(LoginRequiredMixin, generic.UpdateView):
