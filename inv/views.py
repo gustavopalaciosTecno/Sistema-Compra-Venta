@@ -1,38 +1,47 @@
 from django.shortcuts import render, redirect
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, \
+    PermissionRequiredMixin
 from django.views import generic
 from .models import Categoria, SubCategoria, Marca, UnidadMedida, Producto
 from .forms import CategoriaForm, SubCategoriaForm, MarcaForm, UMForm, ProductoForm
 from django.urls import reverse_lazy
+from django.contrib import messages
+from bases.views import SinPrivilegios
+from django.contrib.auth.decorators import login_required, permission_required
 
 
-
-class CategoriaView(LoginRequiredMixin, generic.ListView):
+class CategoriaView(SinPrivilegios, \
+    generic.ListView):
+    permission_required = "inv.view_categoria"
     model = Categoria
     template_name = 'inv/categoria_list.html'
     context_object_name = "obj"
-    login_url = 'bases:login'
     
-class CategoriaNew(LoginRequiredMixin, generic.CreateView):
+    
+class CategoriaNew(SuccessMessageMixin, SinPrivilegios,\
+    generic.CreateView):
     model = Categoria
     template_name = 'inv/categoria_form.html'
     context_object_name = 'obj'
     form_class = CategoriaForm
     success_url = reverse_lazy("inv:categoria_list")
-    login_url = "base:login" 
+   
+    success_message = "Categoría creada satisfactoriamente" 
     
     def form_valid(self, form):
         form.instance.uc = self.request.user
         return super().form_valid(form)       
     
-class CategoriaEdit(LoginRequiredMixin, generic.UpdateView):
+class CategoriaEdit(SuccessMessageMixin, LoginRequiredMixin,\
+    generic.UpdateView):
     model = Categoria
     template_name = 'inv/categoria_form.html'
     context_object_name = 'obj'
     form_class = CategoriaForm
     success_url = reverse_lazy("inv:categoria_list")
     login_url = "base:login" 
+    success_message = "Categoría actualizada satisfactoriamente" 
     
     def form_valid(self, form):
         form.instance.um = self.request.user.id
@@ -45,11 +54,13 @@ class CategoriaDel(LoginRequiredMixin, generic.DeleteView):
     success_url = reverse_lazy("inv:categoria_list")
     
     
-class SubCategoriaView(LoginRequiredMixin, generic.ListView):
+class SubCategoriaView(SinPrivilegios,\
+    generic.ListView):
+    permission_required = "inv.view_subcategoria"
     model = SubCategoria
     template_name = 'inv/subcategoria_list.html'
     context_object_name = "obj"
-    login_url = 'bases:login'    
+   
     
     
 class SubCategoriaNew(LoginRequiredMixin, generic.CreateView):
@@ -85,12 +96,13 @@ class SubCategoriaDel(LoginRequiredMixin, generic.DeleteView):
     success_url = reverse_lazy("inv:subcategoria_list")  
     
 
-class MarcaView(LoginRequiredMixin,\
+class MarcaView(SinPrivilegios,\
      generic.ListView):
+    permission_required = "inv.view_marca"
     model = Marca
     template_name = 'inv/marca_list.html'
     context_object_name = 'obj'
-    login_url = "bases:login"
+    
     
 class MarcaNew(LoginRequiredMixin,\
      generic.CreateView):
@@ -121,6 +133,8 @@ class MarcaEdit(LoginRequiredMixin,
         form.instance.um = self.request.user.id
         return super().form_valid(form)   
     
+@login_required(login_url='/login/')
+@permission_required('inv.change_marca', login_url='bases:sin_privilegios')    
 def marca_inactivar(request, id):
     marca = Marca.objects.filter(pk=id).first()
     contexto = {}
@@ -135,6 +149,7 @@ def marca_inactivar(request, id):
     if request.method=="POST":
         marca.estado=False
         marca.save()
+        messages.error(request, 'Marca inactivada')
         return redirect("inv:marca_list")      
         
     return render(request,template_name, contexto) 
